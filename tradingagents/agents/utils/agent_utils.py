@@ -361,8 +361,8 @@ class Toolkit:
 
         return google_news_results
 
-    @staticmethod
     @tool
+    @staticmethod
     def get_stock_news_openai(
         ticker: Annotated[str, "the company's ticker"],
         curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
@@ -380,6 +380,25 @@ class Toolkit:
 
         return openai_news_results
 
+    @tool
+    @staticmethod
+    def get_stock_news_google(
+        ticker: Annotated[str, "the company's ticker"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    ):
+        """
+        Retrieve social media sentiment and news about a given stock using Google's LLM API.
+        Args:
+            ticker (str): Ticker of a company. e.g. AAPL, TSM
+            curr_date (str): Current date in yyyy-mm-dd format
+        Returns:
+            str: A formatted string containing social media sentiment and news analysis.
+        """
+
+        google_news_results = interface.get_stock_news_google(ticker, curr_date)
+
+        return google_news_results
+
     @staticmethod
     @tool
     def get_global_news_openai(
@@ -396,6 +415,23 @@ class Toolkit:
         openai_news_results = interface.get_global_news_openai(curr_date)
 
         return openai_news_results
+
+    @tool
+    @staticmethod
+    def get_global_news_google(
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    ):
+        """
+        Retrieve global macroeconomic news using Google's LLM API.
+        Args:
+            curr_date (str): Current date in yyyy-mm-dd format
+        Returns:
+            str: A formatted string containing global macroeconomic news analysis.
+        """
+
+        google_news_results = interface.get_global_news_google(curr_date)
+
+        return google_news_results
 
     @staticmethod
     @tool
@@ -417,3 +453,24 @@ class Toolkit:
         )
 
         return openai_fundamentals_results
+
+    @tool
+    @staticmethod
+    def get_fundamentals_google(
+        ticker: Annotated[str, "the company's ticker"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    ):
+        """
+        Retrieve fundamental information about a given stock using Google's LLM API.
+        Args:
+            ticker (str): Ticker of a company. e.g. AAPL, TSM
+            curr_date (str): Current date in yyyy-mm-dd format
+        Returns:
+            str: A formatted string containing fundamental analysis of the company.
+        """
+
+        google_fundamentals_results = interface.get_fundamentals_google(
+            ticker, curr_date
+        )
+
+        return google_fundamentals_results

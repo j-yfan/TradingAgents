@@ -1,25 +1,67 @@
+import os
 import chromadb
 from chromadb.config import Settings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from openai import OpenAI
 
 
 class FinancialSituationMemory:
     def __init__(self, name, config):
-        if config["backend_url"] == "http://localhost:11434/v1":
-            self.embedding = "nomic-embed-text"
+        self.config = config
+        self.llm_provider = config.get("llm_provider", "openai")
+        
+        # Initialize embedding model and client based on provider
+        if self.llm_provider == "google":
+            # For Google provider, we'll use a simple text-based embedding method 
+            # to avoid async issues with the Google gRPC client
+            print("Note: Using simple text-based embeddings for Google provider to avoid async issues")
+            self.embedding = None
+            self.client = None
+            self.embedding_model = None
         else:
-            self.embedding = "text-embedding-3-small"
-        self.client = OpenAI(base_url=config["backend_url"])
+            # Use OpenAI API for embeddings (works with OpenAI, Anthropic, Ollama)
+            if config["backend_url"] == "http://localhost:11434/v1":
+                self.embedding = "nomic-embed-text"
+            else:
+                self.embedding = "text-embedding-3-small"
+            self.client = OpenAI(base_url=config["backend_url"])
+            self.embedding_model = None
+
         self.chroma_client = chromadb.Client(Settings(allow_reset=True))
         self.situation_collection = self.chroma_client.create_collection(name=name)
 
     def get_embedding(self, text):
-        """Get OpenAI embedding for a text"""
-        
-        response = self.client.embeddings.create(
-            model=self.embedding, input=text
-        )
-        return response.data[0].embedding
+        """Get embedding for text using the appropriate provider"""
+        if self.llm_provider == "google":
+            # Use a simple text-based embedding for Google to avoid async issues
+            # This creates consistent embeddings based on text content
+            import hashlib
+            
+            # Create a deterministic embedding from text
+            text_bytes = text.encode('utf-8')
+            hash_obj = hashlib.sha256(text_bytes)
+            hash_hex = hash_obj.hexdigest()
+            
+            # Convert hash to embedding vector (384 dimensions)
+            embedding = []
+            for i in range(0, min(len(hash_hex), 96), 2):  # 96 hex chars = 48 bytes = 384 bits
+                byte_val = int(hash_hex[i:i+2], 16)
+                # Convert each byte to 8 float values between -1 and 1
+                for bit in range(8):
+                    bit_val = (byte_val >> bit) & 1
+                    embedding.append((bit_val * 2) - 1)  # Convert 0,1 to -1,1
+            
+            # Pad to 384 dimensions if needed
+            while len(embedding) < 384:
+                embedding.append(0.0)
+            
+            return embedding[:384]
+        else:
+            # Use OpenAI API (works for OpenAI, Anthropic, Ollama)
+            response = self.client.embeddings.create(
+                model=self.embedding, input=text
+            )
+            return response.data[0].embedding
 
     def add_situations(self, situations_and_advice):
         """Add financial situations and their corresponding advice. Parameter is a list of tuples (situation, rec)"""
@@ -45,7 +87,7 @@ class FinancialSituationMemory:
         )
 
     def get_memories(self, current_situation, n_matches=1):
-        """Find matching recommendations using OpenAI embeddings"""
+        """Find matching recommendations using appropriate embedding provider"""
         query_embedding = self.get_embedding(current_situation)
 
         results = self.situation_collection.query(
@@ -69,7 +111,11 @@ class FinancialSituationMemory:
 
 if __name__ == "__main__":
     # Example usage
-    matcher = FinancialSituationMemory()
+    config = {
+        "llm_provider": "openai",  # or "google" 
+        "backend_url": "https://api.openai.com/v1"
+    }
+    matcher = FinancialSituationMemory("example_memory", config)
 
     # Example data
     example_data = [

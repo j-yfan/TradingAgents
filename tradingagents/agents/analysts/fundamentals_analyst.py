@@ -10,7 +10,11 @@ def create_fundamentals_analyst(llm, toolkit):
         company_name = state["company_of_interest"]
 
         if toolkit.config["online_tools"]:
-            tools = [toolkit.get_fundamentals_openai]
+            # Use provider-specific fundamentals function
+            if toolkit.config.get("llm_provider", "openai").lower() == "google":
+                tools = [toolkit.get_fundamentals_google]
+            else:
+                tools = [toolkit.get_fundamentals_openai]
         else:
             tools = [
                 toolkit.get_finnhub_company_insider_sentiment,

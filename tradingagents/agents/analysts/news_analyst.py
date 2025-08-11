@@ -9,7 +9,11 @@ def create_news_analyst(llm, toolkit):
         ticker = state["company_of_interest"]
 
         if toolkit.config["online_tools"]:
-            tools = [toolkit.get_global_news_openai, toolkit.get_google_news]
+            # Use provider-specific news functions
+            if toolkit.config.get("llm_provider", "openai").lower() == "google":
+                tools = [toolkit.get_global_news_google, toolkit.get_google_news]
+            else:
+                tools = [toolkit.get_global_news_openai, toolkit.get_google_news]
         else:
             tools = [
                 toolkit.get_finnhub_news,

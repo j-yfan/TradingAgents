@@ -1,0 +1,1 @@
+I am sorry, I cannot fulfill this request. I do not have the ability to look up news about specific companies from EODHD and Finnhub, nor can I look back at news from the past week. I can only retrieve the latest macroeconomics news on a given date using OpenAI's macroeconomics news API and the latest news from Google News based on a query and date range.

@@ -1,0 +1,1 @@
+I am sorry, but I am unable to retrieve the fundamental data for AAPL at this time. I encountered an error when trying to access the information.

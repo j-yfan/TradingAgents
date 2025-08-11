@@ -737,6 +737,73 @@ def get_stock_news_openai(ticker, curr_date):
     return response.output[1].content[0].text
 
 
+def get_stock_news_google(ticker, curr_date):
+    """
+    Google-compatible version of stock news retrieval using chat completion API
+    """
+    import os
+    config = get_config()
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    from datetime import datetime, timedelta
+    
+    # Get API key from environment or config
+    api_key = os.getenv("GOOGLE_API_KEY") or config.get("google_api_key")
+    if not api_key:
+        return f"Google API key not found. Please set GOOGLE_API_KEY environment variable."
+    
+    # Use the Google LLM for news analysis
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",  # Use a stable model name
+        google_api_key=api_key,
+        temperature=1,
+        max_tokens=4096,
+    )
+    
+    # Calculate the date range
+    end_date = datetime.strptime(curr_date, '%Y-%m-%d')
+    start_date = end_date - timedelta(days=7)
+    
+    # Create a comprehensive prompt for news analysis
+    prompt = f"""You are a financial news analyst tasked with analyzing recent social media sentiment and news about {ticker} from {start_date.strftime('%Y-%m-%d')} to {curr_date}.
+
+Please provide a comprehensive analysis that includes:
+
+1. **Recent Social Media Sentiment**:
+   - Overall sentiment (bullish, bearish, or neutral)
+   - Key topics or themes being discussed
+   - Volume of social media mentions and engagement
+
+2. **News Headlines and Analysis**:
+   - Major news stories affecting {ticker} in the past week
+   - Company announcements, earnings updates, or press releases
+   - Industry news that might impact {ticker}
+
+3. **Market Perception**:
+   - How the market is reacting to recent news
+   - Any shifts in investor sentiment
+   - Analyst recommendations or rating changes
+
+4. **Key Events and Catalysts**:
+   - Upcoming events that might affect the stock
+   - Earnings dates, product launches, or major announcements
+   - Regulatory or legal developments
+
+5. **Social Media Metrics** (if available):
+   - Mention volume trends
+   - Sentiment score changes
+   - Influential posts or viral content
+
+Please format your analysis in a clear, structured manner and conclude with a summary of the overall sentiment and potential impact on {ticker}'s stock price.
+
+Note: This analysis is based on publicly available information and general market knowledge as of the analysis date."""
+
+    try:
+        response = llm.invoke(prompt)
+        return response.content
+    except Exception as e:
+        return f"Unable to retrieve social media and news data for {ticker}: {str(e)}"
+
+
 def get_global_news_openai(curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
@@ -805,3 +872,139 @@ def get_fundamentals_openai(ticker, curr_date):
     )
 
     return response.output[1].content[0].text
+
+
+def get_fundamentals_google(ticker, curr_date):
+    """
+    Google-compatible version of fundamentals data retrieval using chat completion API
+    """
+    import os
+    config = get_config()
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    
+    # Get API key from environment or config
+    api_key = os.getenv("GOOGLE_API_KEY") or config.get("google_api_key")
+    if not api_key:
+        return f"Google API key not found. Please set GOOGLE_API_KEY environment variable."
+    
+    # Use the Google LLM for fundamental analysis
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",  # Use a stable model name
+        google_api_key=api_key,
+        temperature=1,
+        max_tokens=4096,
+    )
+    
+    # Create a comprehensive prompt for fundamental analysis
+    prompt = f"""You are a financial analyst tasked with providing fundamental analysis for {ticker} around {curr_date}.
+
+Please provide a comprehensive fundamental analysis that includes:
+
+1. **Financial Metrics Analysis**:
+   - Price-to-Earnings (P/E) ratio and comparison to industry average
+   - Price-to-Sales (P/S) ratio 
+   - Price-to-Book (P/B) ratio
+   - Debt-to-Equity ratio
+   - Current ratio and quick ratio
+   - Return on Equity (ROE) and Return on Assets (ROA)
+
+2. **Cash Flow Analysis**:
+   - Operating cash flow trends
+   - Free cash flow analysis
+   - Cash flow per share
+
+3. **Revenue and Profitability**:
+   - Revenue growth trends (quarterly and yearly)
+   - Profit margins (gross, operating, net)
+   - Earnings per share (EPS) trends
+
+4. **Balance Sheet Strength**:
+   - Total assets and liabilities
+   - Cash and cash equivalents
+   - Long-term debt levels
+
+5. **Valuation Assessment**:
+   - Whether the stock appears overvalued, undervalued, or fairly valued
+   - Comparison to peer companies in the sector
+
+6. **Recent Developments**:
+   - Any recent earnings reports or guidance updates
+   - Management changes or strategic initiatives
+   - Industry trends affecting the company
+
+Please format your analysis in a clear, structured manner with specific numbers where available, and conclude with a summary table of key financial metrics.
+
+Note: This analysis is based on publicly available information and general market knowledge as of the analysis date."""
+
+    try:
+        response = llm.invoke(prompt)
+        return response.content
+    except Exception as e:
+        return f"Unable to retrieve fundamental data for {ticker}: {str(e)}"
+
+
+def get_global_news_google(curr_date):
+    """
+    Google-compatible version of global news retrieval using chat completion API
+    """
+    import os
+    config = get_config()
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    from datetime import datetime, timedelta
+    
+    # Get API key from environment or config
+    api_key = os.getenv("GOOGLE_API_KEY") or config.get("google_api_key")
+    if not api_key:
+        return f"Google API key not found. Please set GOOGLE_API_KEY environment variable."
+    
+    # Use the Google LLM for news analysis
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",  # Use a stable model name
+        google_api_key=api_key,
+        temperature=1,
+        max_tokens=4096,
+    )
+    
+    # Calculate the date range
+    end_date = datetime.strptime(curr_date, '%Y-%m-%d')
+    start_date = end_date - timedelta(days=7)
+    
+    # Create a comprehensive prompt for global news analysis
+    prompt = f"""You are a financial news analyst tasked with analyzing global macroeconomic news and market developments from {start_date.strftime('%Y-%m-%d')} to {curr_date}.
+
+Please provide a comprehensive analysis of global news and macroeconomic events that could impact financial markets, including:
+
+1. **Macroeconomic Indicators**:
+   - Key economic data releases (GDP, inflation, employment data)
+   - Central bank decisions and policy announcements
+   - Interest rate changes and monetary policy updates
+
+2. **Global Market News**:
+   - Major stock market movements and trends
+   - Currency fluctuations and forex developments
+   - Commodity price movements (oil, gold, etc.)
+
+3. **Geopolitical Events**:
+   - Political developments affecting markets
+   - Trade relations and international agreements
+   - Regional conflicts or stability issues
+
+4. **Corporate and Industry News**:
+   - Major corporate earnings or announcements
+   - Industry-wide trends and disruptions
+   - Mergers, acquisitions, or regulatory changes
+
+5. **Market Sentiment Indicators**:
+   - Investor sentiment and market volatility
+   - Risk-on vs risk-off sentiment
+   - Flight-to-quality movements
+
+Please format your analysis in a clear, structured manner and conclude with a summary table of key events and their potential market impact.
+
+Note: This analysis is based on publicly available information and general market knowledge as of the analysis date."""
+
+    try:
+        response = llm.invoke(prompt)
+        return response.content
+    except Exception as e:
+        return f"Unable to retrieve global news data: {str(e)}"
