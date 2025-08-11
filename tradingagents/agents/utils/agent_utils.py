@@ -380,8 +380,8 @@ class Toolkit:
 
         return openai_news_results
 
-    @tool
     @staticmethod
+    @tool
     def get_stock_news_google(
         ticker: Annotated[str, "the company's ticker"],
         curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
