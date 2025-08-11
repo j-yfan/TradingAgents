@@ -10,9 +10,21 @@ def create_fundamentals_analyst(llm, toolkit):
         company_name = state["company_of_interest"]
 
         if toolkit.config["online_tools"]:
-            # Use provider-specific fundamentals function
+            # Use provider-specific fundamentals function with fallback
             if toolkit.config.get("llm_provider", "openai").lower() == "google":
-                tools = [toolkit.get_fundamentals_google]
+                if hasattr(toolkit, 'get_fundamentals_google') and callable(getattr(toolkit, 'get_fundamentals_google')):
+                    tools = [toolkit.get_fundamentals_google]
+                else:
+                    print("Fundamentals Google tool not available, falling back to OpenAI")
+                    if hasattr(toolkit, 'get_fundamentals_openai'):
+                        tools = [toolkit.get_fundamentals_openai]
+                    else:
+                        # Fall back to offline tools
+                        tools = [
+                            toolkit.get_finnhub_company_insider_sentiment,
+                            toolkit.get_finnhub_company_insider_transactions,
+                            toolkit.get_simfin_balance_sheet,
+                        ]
             else:
                 tools = [toolkit.get_fundamentals_openai]
         else:

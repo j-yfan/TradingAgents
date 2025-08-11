@@ -10,9 +10,18 @@ def create_social_media_analyst(llm, toolkit):
         company_name = state["company_of_interest"]
 
         if toolkit.config["online_tools"]:
-            # Use provider-specific news function  
+            # Use provider-specific news function, with fallback
             if toolkit.config.get("llm_provider", "openai").lower() == "google":
-                tools = [toolkit.get_stock_news_google]
+                # Try to use Google tool, but fall back to available tools if not accessible
+                if hasattr(toolkit, 'get_stock_news_google') and callable(getattr(toolkit, 'get_stock_news_google')):
+                    tools = [toolkit.get_stock_news_google]
+                else:
+                    # Fall back to OpenAI tool or Reddit if Google tool is not available
+                    print("Google news tool not properly registered, falling back to OpenAI tool")
+                    if hasattr(toolkit, 'get_stock_news_openai'):
+                        tools = [toolkit.get_stock_news_openai]
+                    else:
+                        tools = [toolkit.get_reddit_stock_info]
             else:
                 tools = [toolkit.get_stock_news_openai]
         else:

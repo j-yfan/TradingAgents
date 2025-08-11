@@ -111,6 +111,35 @@ class TradingAgentsGraph:
 
     def _create_tool_nodes(self) -> Dict[str, ToolNode]:
         """Create tool nodes for different data sources."""
+        
+        # Determine which tools to use based on LLM provider
+        is_google_provider = self.config.get("llm_provider", "openai").lower() == "google"
+        online_tools = self.config.get("online_tools", True)
+        
+        # Select appropriate tools based on provider and availability
+        if online_tools:
+            if is_google_provider:
+                # Use Google tools if available, fall back to OpenAI tools
+                social_news_tool = (self.toolkit.get_stock_news_google 
+                                  if hasattr(self.toolkit, 'get_stock_news_google') 
+                                  else self.toolkit.get_stock_news_openai)
+                global_news_tool = (self.toolkit.get_global_news_google 
+                                   if hasattr(self.toolkit, 'get_global_news_google') 
+                                   else self.toolkit.get_global_news_openai)
+                fundamentals_tool = (self.toolkit.get_fundamentals_google 
+                                    if hasattr(self.toolkit, 'get_fundamentals_google') 
+                                    else self.toolkit.get_fundamentals_openai)
+            else:
+                # Use OpenAI tools
+                social_news_tool = self.toolkit.get_stock_news_openai
+                global_news_tool = self.toolkit.get_global_news_openai
+                fundamentals_tool = self.toolkit.get_fundamentals_openai
+        else:
+            # Use offline tools only
+            social_news_tool = self.toolkit.get_reddit_stock_info
+            global_news_tool = self.toolkit.get_reddit_news
+            fundamentals_tool = self.toolkit.get_finnhub_company_insider_sentiment
+        
         return {
             "market": ToolNode(
                 [
@@ -125,7 +154,7 @@ class TradingAgentsGraph:
             "social": ToolNode(
                 [
                     # online tools
-                    self.toolkit.get_stock_news_openai,
+                    social_news_tool,
                     # offline tools
                     self.toolkit.get_reddit_stock_info,
                 ]
@@ -133,7 +162,7 @@ class TradingAgentsGraph:
             "news": ToolNode(
                 [
                     # online tools
-                    self.toolkit.get_global_news_openai,
+                    global_news_tool,
                     self.toolkit.get_google_news,
                     # offline tools
                     self.toolkit.get_finnhub_news,
@@ -143,7 +172,7 @@ class TradingAgentsGraph:
             "fundamentals": ToolNode(
                 [
                     # online tools
-                    self.toolkit.get_fundamentals_openai,
+                    fundamentals_tool,
                     # offline tools
                     self.toolkit.get_finnhub_company_insider_sentiment,
                     self.toolkit.get_finnhub_company_insider_transactions,

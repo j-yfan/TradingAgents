@@ -1,0 +1,1 @@
+Okay, I will analyze BMNR. First, I need to retrieve the stock data. What is the start date I should use?

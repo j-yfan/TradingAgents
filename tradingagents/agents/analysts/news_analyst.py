@@ -9,9 +9,21 @@ def create_news_analyst(llm, toolkit):
         ticker = state["company_of_interest"]
 
         if toolkit.config["online_tools"]:
-            # Use provider-specific news functions
+            # Use provider-specific news functions with fallback
             if toolkit.config.get("llm_provider", "openai").lower() == "google":
-                tools = [toolkit.get_global_news_google, toolkit.get_google_news]
+                # Check if Google tools are available
+                google_tools = []
+                if hasattr(toolkit, 'get_global_news_google') and callable(getattr(toolkit, 'get_global_news_google')):
+                    google_tools.append(toolkit.get_global_news_google)
+                else:
+                    print("Global news Google tool not available, falling back to OpenAI")
+                    if hasattr(toolkit, 'get_global_news_openai'):
+                        google_tools.append(toolkit.get_global_news_openai)
+                
+                if hasattr(toolkit, 'get_google_news') and callable(getattr(toolkit, 'get_google_news')):
+                    google_tools.append(toolkit.get_google_news)
+                
+                tools = google_tools if google_tools else [toolkit.get_finnhub_news, toolkit.get_reddit_news]
             else:
                 tools = [toolkit.get_global_news_openai, toolkit.get_google_news]
         else:
