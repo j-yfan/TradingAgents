@@ -1,0 +1,8 @@
+google-genai
+python-dotenv
+pandas
+finnhub-python
+schedule
+quantstats
+yfinance
+pydantic

@@ -1,0 +1,1 @@
+I am sorry, I cannot fulfill this request. The tool `get_fundamentals_google` is not a valid one. Please provide me with the correct tool.

@@ -1,0 +1,74 @@
+{
+  "high_potential_stocks": [
+    {
+      "ticker": "AAPL",
+      "company_name": "Apple Inc.",
+      "confidence_score": 0.85,
+      "reasoning": "Strong iPhone sales, expanding services revenue, and solid cash position. Recent earnings beat expectations.",
+      "sentiment": "Positive"
+    },
+    {
+      "ticker": "MSFT",
+      "company_name": "Microsoft Corporation",
+      "confidence_score": 0.78,
+      "reasoning": "Cloud business growth, Azure expansion, and AI integration showing promise. Steady dividend growth.",
+      "sentiment": "Positive"
+    },
+    {
+      "ticker": "GOOGL",
+      "company_name": "Alphabet Inc.",
+      "confidence_score": 0.72,
+      "reasoning": "Search dominance continues, but regulatory concerns and competition in cloud. YouTube growth solid.",
+      "sentiment": "Neutral"
+    },
+    {
+      "ticker": "TSLA",
+      "company_name": "Tesla Inc.",
+      "confidence_score": 0.65,
+      "reasoning": "EV market leadership but increasing competition. Production targets met but margin pressure.",
+      "sentiment": "Neutral"
+    },
+    {
+      "ticker": "NVDA",
+      "company_name": "NVIDIA Corporation",
+      "confidence_score": 0.92,
+      "reasoning": "AI chip demand explosion, data center growth, and gaming recovery. Strong technical indicators.",
+      "sentiment": "Positive"
+    },
+    {
+      "ticker": "META",
+      "company_name": "Meta Platforms Inc.",
+      "confidence_score": 0.58,
+      "reasoning": "Metaverse investments showing mixed results. Ad revenue stable but regulatory headwinds persist.",
+      "sentiment": "Neutral"
+    },
+    {
+      "ticker": "AMZN",
+      "company_name": "Amazon.com Inc.",
+      "confidence_score": 0.81,
+      "reasoning": "AWS growth strong, retail margins improving, and logistics efficiency gains. Prime growth steady.",
+      "sentiment": "Positive"
+    },
+    {
+      "ticker": "NFLX",
+      "company_name": "Netflix Inc.",
+      "confidence_score": 0.45,
+      "reasoning": "Subscriber growth slowing, increased competition from Disney+ and others. Content costs rising.",
+      "sentiment": "Negative"
+    },
+    {
+      "ticker": "AMD",
+      "company_name": "Advanced Micro Devices",
+      "confidence_score": 0.76,
+      "reasoning": "Server chip gains against Intel, data center growth, but consumer PC market weak.",
+      "sentiment": "Positive"
+    },
+    {
+      "ticker": "CRM",
+      "company_name": "Salesforce Inc.",
+      "confidence_score": 0.69,
+      "reasoning": "SaaS leadership position solid, but growth slowing and valuation concerns in rising rate environment.",
+      "sentiment": "Neutral"
+    }
+  ]
+}
