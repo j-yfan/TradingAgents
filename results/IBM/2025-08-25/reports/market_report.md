@@ -1,0 +1,1 @@
+Okay, I will analyze IBM's stock data. First, I need to retrieve the data from Yahoo Finance. What start and end dates should I use?
